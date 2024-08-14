@@ -1,6 +1,15 @@
 import ReactPlayer from "react-player";
+import { useAppDispatch } from "../store";
+import { next, useCurrentLession } from "../store/slices/player";
 
 export function VideoPlayer() {
+  const dispatch = useAppDispatch();
+  const { lessions, currentLesson } = useCurrentLession();
+
+  function handleNext() {
+    dispatch(next());
+  }
+
   return (
     <div className="flex-1">
       <div className="w-full bg-zinc-950 aspect-video">
@@ -8,7 +17,8 @@ export function VideoPlayer() {
           width={"100%"}
           height={"100%"}
           controls
-          url={"https://www.youtube.com/watch?v=u99tNt3TZf8"}
+          onEnded={handleNext}
+          url={"https://www.youtube.com/watch?v=" + lessions[currentLesson].id}
         />
       </div>
     </div>
