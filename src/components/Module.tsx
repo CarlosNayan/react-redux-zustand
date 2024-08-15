@@ -16,6 +16,7 @@ export function Module({ title, ammountOfLessions, moduleIndex }: ModuleProps) {
   const { lessions, currentModule, currentLesson } = useCurrentLession();
 
   useEffect(() => {
+    if (!lessions) return;
     document.title = `Assistindo: ${lessions[currentLesson].title}`;
   }, [lessions, currentModule, currentLesson]);
 
@@ -42,7 +43,7 @@ export function Module({ title, ammountOfLessions, moduleIndex }: ModuleProps) {
       </Collapsible.Trigger>
       <Collapsible.Content>
         <nav className="relative w-full flex flex-col gap-4 p-6">
-          {lessions.map((lession, index) => (
+          {lessions?.map((lession, index) => (
             <Lessions
               key={lession.id}
               title={lession.title}
