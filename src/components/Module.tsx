@@ -1,8 +1,7 @@
 import * as Collapsible from "@radix-ui/react-collapsible";
 import { ChevronDown } from "lucide-react";
 import { Lessions } from "./Lessions";
-import { useAppDispatch } from "../store";
-import { play, useCurrentLession } from "../store/slices/player";
+import { useStore } from "../store";
 import { useEffect } from "react";
 type ModuleProps = {
   title: string;
@@ -11,19 +10,22 @@ type ModuleProps = {
 };
 
 export function Module({ title, ammountOfLessions, moduleIndex }: ModuleProps) {
-  const dispatch = useAppDispatch();
+  const { course, currentModuleIndex, currentLessonIndex, play } = useStore();
 
-  const { lessions, currentModule, currentLesson } = useCurrentLession();
+  const currentLession =
+    course?.modules[currentModuleIndex].lessons[currentLessonIndex];
+
+  const currentModule = course?.modules[currentModuleIndex];
 
   useEffect(() => {
-    if (!lessions) return;
-    document.title = `Assistindo: ${lessions[currentLesson].title}`;
-  }, [lessions, currentModule, currentLesson]);
+    if (!course) return;
+    document.title = `Assistindo: ${currentLession?.title}`;
+  }, [course, currentModuleIndex, currentLessonIndex]);
 
   return (
     <Collapsible.Root
       className="group"
-      defaultOpen={currentModule === moduleIndex}
+      defaultOpen={currentModuleIndex === moduleIndex}
     >
       <Collapsible.Trigger>
         <button className="flex-1 w-[308px] flex-col gap-3 bg-zinc-800 p-4">
@@ -43,22 +45,16 @@ export function Module({ title, ammountOfLessions, moduleIndex }: ModuleProps) {
       </Collapsible.Trigger>
       <Collapsible.Content>
         <nav className="relative w-full flex flex-col gap-4 p-6">
-          {lessions?.map((lession, index) => (
+          {currentModule?.lessons.map((lession, index) => (
             <Lessions
               key={lession.id}
               title={lession.title}
               duration={lession.duration}
               isCurrent={
-                currentModule === moduleIndex && currentLesson === index
+                currentModuleIndex === moduleIndex &&
+                currentLessonIndex === index
               }
-              onPlay={() =>
-                dispatch(
-                  play({
-                    currentModuleIndex: moduleIndex,
-                    currentLessonIndex: index,
-                  })
-                )
-              }
+              onPlay={() => play(currentModuleIndex, index)}
             />
           ))}
         </nav>
